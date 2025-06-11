@@ -6,6 +6,7 @@ export default class Engine{
 			return Engine.instance;
 		console.log("Engine created")
 		this.setUpBase();
+		this.setUpLights();
 		this.setUpAnimation();
 		window.addEventListener('resize', this.resize);
 		Engine.instance = this;
@@ -17,6 +18,24 @@ export default class Engine{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(this.renderer.domElement);		
+	}
+	setUpLights(){
+		const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // white, soft intensity
+this.scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 800); // white, brighter
+directionalLight.position.set(5, 10, 5); // top-right-front
+directionalLight.castShadow = true;
+
+// Make shadows soft
+
+
+this.scene.add(directionalLight);
+
+// Optional helper to visualize the light direction
+// const helper = new THREE.DirectionalLightHelper(directionalLight, 1);
+// scene.add(helper);
+
+
 	}
 	setUpAnimation(){
 		this.animate = this.animate.bind(this);
