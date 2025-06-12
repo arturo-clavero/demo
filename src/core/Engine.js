@@ -20,9 +20,9 @@ export default class Engine{
 		document.body.appendChild(this.renderer.domElement);		
 	}
 	setUpLights(){
-		const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // white, soft intensity
+		const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // white, soft intensity
 this.scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 800); // white, brighter
+const directionalLight = new THREE.DirectionalLight(0xffffff, 5); // white, brighter
 directionalLight.position.set(5, 10, 5); // top-right-front
 directionalLight.castShadow = true;
 
@@ -39,14 +39,16 @@ this.scene.add(directionalLight);
 	}
 	setUpAnimation(){
 		this.animate = this.animate.bind(this);
-		this.animatedObjects = [];
+		this.animatedObjects = new Set();
 	}
 	addObject(object){
 		this.scene.add(object.obj);
-		if (object.animate)
-		{
-			this.animatedObjects.push(object)
-		}
+	}
+	addAnimatedObject(obj){
+		this.animatedObjects.add(obj);
+	}
+	removeAnimatedObject(obj){
+		this.animatedObjects.delete(obj);
 	}
 	resize(){
 		this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -56,8 +58,12 @@ this.scene.add(directionalLight);
 	animate(){
 		requestAnimationFrame(this.animate);
 		this.animatedObjects.forEach(obj => {
-			console.log("called animate cube");
-			obj.animate(obj.obj);	
+			// console.log("obj should be .. ", obj);
+			obj.animations.forEach(anim =>{
+				// console.log("ft should eb : ", anim);
+				anim(obj.obj)
+			}
+			)
 		});
 		this.renderer.render(this.scene, this.camera);
 	}

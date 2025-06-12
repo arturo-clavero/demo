@@ -1,102 +1,105 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import Engine from '../core/Engine';
 import ObjectFactory from '../core/ObjectFactory';
 
-console.log("cube created")
+const radius = 0.85;
+const hat_size = 0.2;
+function new_hat(){
+	const group = new THREE.Group();
 
-// const geometry = new THREE.BoxGeometry();
-// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-function rotateCube(obj){
-	obj.rotation.x += 0.01;
-	obj.rotation.y += 0.01;
+	const brimRadius = radius * (1.4 + hat_size); // a little wider
+	const brimHeight = radius * 0.05;
+	const topRadius = radius * (1 + hat_size);
+
+	// Brim of the hat (thin cylinder)
+	const brim = new THREE.Mesh(
+		new THREE.CylinderGeometry(brimRadius, brimRadius, brimHeight, 32),
+		new THREE.MeshStandardMaterial({ color: 0x222222 })
+	);
+	brim.position.y = radius + brimHeight / 2;
+
+	// Dome part of the hat (half-sphere)
+	const dome = new THREE.Mesh(
+		new THREE.SphereGeometry(
+			topRadius,
+			32,
+			32,
+			0, Math.PI * 2,
+			0, Math.PI / 2 // upper half
+		),
+		new THREE.MeshStandardMaterial({ color: 0xffff00 }) // yellow
+	);
+	dome.position.y = radius + brimHeight;
+
+	group.add(brim, dome);
+	return group;
 }
 
-// const  cube1 = new ObjectFactory({geo: geometry, mat: material, animation: rotateCube})
-const totalHairs = 10000;
-// const totalHairs = 100;
-const hairLenDif = 0.3;
-let hairLen = 1;
-hairLen -= (hairLenDif / 2);
-const ballCov = 0.5;
-class CustomSinCurve extends THREE.Curve {
-	constructor(scale = 1, time = 0) {
-		super();
-		this.scale = scale;
-		this.time = time;
+let loadedHat = null;
+const loader = new GLTFLoader();
+
+function loadHat() {
+	return new Promise((resolve, reject) => {
+	  loader.load('hat2.glb', gltf => resolve(gltf.scene), undefined, reject);
+	});
+  }
+
+
+function new_hat_model(){
+	const hatClone = loadedHat; // deep clone with children & materials
+hatClone.position.y = radius;
+return hatClone;
+}
+
+const geometry = new THREE.SphereGeometry(radius, 16, 16);
+
+class Miner extends ObjectFactory{
+	constructor(color = 0x0000ff){
+		const material = new THREE.MeshStandardMaterial({ color: color })
+		const ball = new THREE.Mesh(geometry, material);
+		const miner = new THREE.Group();
+		//miner.add(ball, new_hat());
+		miner.add(ball);
+
+		super({model: miner})
+		loadHat().then((hatModel) => {
+			let scale = 0.046;
+			hatModel.scale.set(scale, scale, scale + 0.01)
+			// hatModel.rotation.z = Math.PI /2;
+			hatModel.position.set(0.1, -6.7, -0.04);
+			console.log('Hat position:', hatModel.position);
+
+			new Engine().scene.add(hatModel);
+			this.obj.add(hatModel)
+			this.obj.rotation.y -= Math.PI / 2;
+			// this.obj.scale.set(0.1, 0.1, 0.1)
+			// Now safe to add copies
+		  });
+		//super({ geo: geometry, mat: material });	
 	}
-	setTime(t) {
-		this.time = t;
+
+	static(){
+
 	}
-	getPoint(t, optionalTarget = new THREE.Vector3()) {
-		const randomOffset = Math.random() * hairLenDif;
-		const length = hairLen + randomOffset;
-		const tx = t * length;
-		const wave = Math.sin(Math.PI * t + this.time) * 0.1;
-		const ty = wave;
-		const tz = 0;
-		return optionalTarget.set(tx, ty, tz).multiplyScalar(this.scale);
+	jump(){
+
 	}
 }
 
+let miner = new Miner();
 
-const path = new CustomSinCurve( 5 );
-let geometry = new THREE.TubeGeometry( path, 100, 0.05, 3, false );
-const material = new THREE.MeshStandardMaterial( { color: 0x222222 } );
-function makeOrientedTube(direction) {
-	const hair = new THREE.Mesh(geometry, material);
-	hair.scale.set(0.1, 0.1, 0.1);
-	const dir = direction.clone().normalize();
-	const quat = new THREE.Quaternion();
-	quat.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir);
-	hair.quaternion.copy(quat);
+miner.show();
+console.log("About to call rotate");
 
-	return hair;
-}
-const hairs = [];
-const group = new THREE.Group();
-for (let i = 0; i < totalHairs; i++) {
-	const theta = Math.random() * Math.PI * 2;
-	const phi = Math.acos(2 * Math.random() - 1);
-	const x = Math.sin(phi) * Math.cos(theta);
-	const y = Math.sin(phi) * Math.sin(theta);
-	const z = Math.cos(phi);
+// miner.rotate([1, 0, 0], -0.1);
+// miner.move([0, 0, -0.1])
+miner.bounceSinusoidal([0, 0.05, 0], 3)
 
-	const direction = new THREE.Vector3(x, y, z);
+console.log('miner.rotate is function:', typeof miner.rotate === 'function');
 
-// 	const tubeRadius = 0.01 + Math.random() * 0.01; // random thinness
-//  geometry = new THREE.TubeGeometry(path, 20, tubeRadius, 4, false);
+// miner.addAnimation(miner.rotate([1,0,0]));
 
- const curve = new CustomSinCurve(5, 0);
- 	const tubeRadius = 0.01 + Math.random() * 0.01; // random thinness
 
-const geometry = new THREE.TubeGeometry(curve, 20, tubeRadius, 4, false);
-const hair = new THREE.Mesh(geometry, material);
-hair.scale.set(0.1, 0.1, 0.1);
-
-const dir = direction.clone().normalize();
-const quat = new THREE.Quaternion();
-quat.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir);
-hair.quaternion.copy(quat);
-
-group.add(hair);
-hairs.push({ curve, mesh: hair }); // store for animation
-
-	// const hair = makeOrientedTube(direction);
-	group.add(hair);
-	hairs.push({ curve, mesh: hair }); // store for animation
-}
-function rotateBall(obj){
-	let t = performance.now() * 0.001; // time in seconds
-for (const { curve, mesh } of hairs) {
-	curve.setTime(t);
-	mesh.geometry.dispose(); // dispose old geometry
-	mesh.geometry = new THREE.TubeGeometry(curve, 20, 0.01 + Math.random() * 0.01, 4, false);
-}
-	// rotateCube(obj)
-}
-const spgeo = new THREE.SphereGeometry(hairLen * ballCov, 16, 16);
-const sp = new THREE.Mesh(spgeo, material);
-group.add(sp)
-const  hair1 = new ObjectFactory({model: group, animation: rotateBall})
-
-const cube = 0
+const cube = 1;
 export {cube}
