@@ -16,11 +16,6 @@ function loadHat() {
 	});
   }
 
-  function loadBody() {
-	return new Promise((resolve, reject) => {
-	  loader.load('ball.glb', gltf => resolve(gltf.scene), undefined, reject);
-	});
-  }
 
   function addEyesTo(mesh, spacing = 0.2, size = 0.05) {
 	const eyeGeo = new THREE.SphereGeometry(size, 8, 8);
