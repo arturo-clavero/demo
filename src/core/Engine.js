@@ -1,5 +1,7 @@
 import * as THREE from 'three';
+import StateManager from './StateManager';
 
+const stateManager = new StateManager();
 export default class Engine{
 	constructor(){
 		if (Engine.instance)
@@ -22,15 +24,11 @@ export default class Engine{
 	setUpLights(){
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // white, soft intensity
 this.scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // white, brighter
-directionalLight.position.set(5, 10, 15); // top-right-front
-directionalLight.castShadow = true;
-
-// Make shadows soft
-
-
-this.scene.add(directionalLight);
-
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // white, brighter
+// directionalLight.position.set(5, 10, 15); // top-right-front
+// directionalLight.castShadow = true;
+// // Make shadows soft
+// this.scene.add(directionalLight);
 // Optional helper to visualize the light direction
 // const helper = new THREE.DirectionalLightHelper(directionalLight, 1);
 // scene.add(helper);
@@ -55,16 +53,17 @@ this.scene.add(directionalLight);
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
-	animate(){
+	animate(time){
 		requestAnimationFrame(this.animate);
-		this.animatedObjects.forEach(obj => {
-			// console.log("obj should be .. ", obj);
-			obj.animations.forEach(anim =>{
-				// console.log("ft should eb : ", anim);
-				anim(obj.obj)
-			}
-			)
-		});
+		// this.animatedObjects.forEach(obj => {
+		// 	// console.log("obj should be .. ", obj);
+		// 	obj.animations.forEach(anim =>{
+		// 		// console.log("ft should eb : ", anim);
+		// 		anim(obj.obj)
+		// 	}
+		// 	)
+		// });
+		stateManager.animate(time)
 		this.renderer.render(this.scene, this.camera);
 	}
 }

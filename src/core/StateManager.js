@@ -9,21 +9,18 @@ export default class StateManager {
 	  this.currentState = null;
 	  StateManager.instance = this;
 	}
-	addStates(states) {
-		for (let i = 0; i < states.length; i++){
-			this.states.push(states[i]);
-			this.names[states[i].name] = this.states.length - 1;
-		}
-		this.states.push(states);
-		this.names[states]
+	addState(state) {
+		this.states.push(state);
+		this.names[state.name] = this.states.length - 1;
 	}
-	changeState(name) {
+	switchState(name) {
+		if (this.currentState && this.currentState.name == name) return;
 		if (this.currentState) this.currentState.exit();
 		this.currentState = this.states[this.names[name]];
 		this.currentState.enter();
 	}
-	animate(){
-		if (this.currentState) this.currentState.animate();
+	animate(time){
+		if (this.currentState) this.currentState.animate(time);
 	}
 	resize(){
 		if (this.currentState) this.currentState.resize();

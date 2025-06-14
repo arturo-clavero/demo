@@ -11,8 +11,12 @@ export default class State{
 		this.name = name;
 		this.enter = enter;
 		this.exit = exit;
-		this.animate = animate;
+		this.animate = (time)=>{
+			console.log("animations for ", this.name)
+			animate(time);
+		}
 		this.resize = resize;
-		new StateManager().addStates(this);
+		this.exit();
+		new StateManager().addState(this);
 	}
 }

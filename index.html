@@ -15,22 +15,23 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar expanded">
+ <!-- Sidebar -->
+<div class="sidebar expanded">
 	<button class="toggle-btn">☰</button>
 	<ul>
-	  <li class="active"><i data-feather="home"></i><span class="label">Home</span></li>
-<li><i data-feather="compass"></i><span class="label">Explore</span></li>
-<li><i data-feather="layers"></i><span class="label">Realms</span></li>
-<li><i data-feather="star"></i><span class="label">Constellations</span></li>
-<li><i data-feather="settings"></i><span class="label">Settings</span></li>
-</ul>
+	  <li class="active" data-scene="galaxy"><i data-feather="home"></i><span class="label">Home</span></li>
+	  <li data-scene="explore"><i data-feather="compass"></i><span class="label">Explore</span></li>
+	  <li data-scene="realms"><i data-feather="layers"></i><span class="label">Realms</span></li>
+	  <li data-scene="constellations"><i data-feather="star"></i><span class="label">Constellations</span></li>
+	  <li data-scene="settings"><i data-feather="settings"></i><span class="label">Settings</span></li>
+	</ul>
   </div>
+  
 
   <!-- Your Scripts -->
   <script type="module" src="./src/main.js"></script>
   <script src="https://unpkg.com/feather-icons"></script> 
-  <script src="./src/sidebar.js"></script>
+  <script type="module" src="./src/sidebar.js"></script>
 
 </body>
 </html>
