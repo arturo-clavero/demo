@@ -1,56 +1,58 @@
 import * as THREE from 'three';
 import { createNoise3D } from 'simplex-noise';
-// import {cube} from './objs/miner.js';
+import { deltaTime } from 'three/tsl';
 const noise3D = createNoise3D();
+
+const scene = new THREE.Scene();
 
 const combos = [
   {
-	name: "Mystic Cyan-Purple",
-	background: 0x111122,
-	fog: 0x111122,
-	terrainColor: 0x88ccff,
-	terrainEmissive: 0x66aaff,
-	sphereHueBase: 0.55, // cyan-purple range
+    name: "Mystic Cyan-Purple",
+    background: 0x111122,
+    fog: 0x111122,
+    terrainColor: 0x88ccff,
+    terrainEmissive: 0x66aaff,
+    sphereHueBase: 0.55, // cyan-purple range
   },
   {
-	name: "Electric Indigo",
-	background: 0x0a0a1f,
-	fog: 0x0a0a1f,
-	terrainColor: 0x4b3b8a,    // deep indigo purple
-	terrainEmissive: 0x8a7bff, // soft purple glow
-	sphereColors: [0x9988ff, 0xbbccff, 0x7766ff], // lilac, pale blue, vivid blue
+    name: "Electric Indigo",
+    background: 0x0a0a1f,
+    fog: 0x0a0a1f,
+    terrainColor: 0x4b3b8a,    // deep indigo purple
+    terrainEmissive: 0x8a7bff, // soft purple glow
+    sphereColors: [0x9988ff, 0xbbccff, 0x7766ff], // lilac, pale blue, vivid blue
   },
   {
-	name: "Mystic Lavender",
-	background: 0x1f1330,
-	fog: 0x1f1330,
-	terrainColor: 0x6f4c8b,    // muted lavender purple
-	terrainEmissive: 0xbba6ff, // pale glowing lavender
-	sphereColors: [0xd3c0ff, 0xa88cff, 0x9980ff], // light purple shades
+    name: "Mystic Lavender",
+    background: 0x1f1330,
+    fog: 0x1f1330,
+    terrainColor: 0x6f4c8b,    // muted lavender purple
+    terrainEmissive: 0xbba6ff, // pale glowing lavender
+    sphereColors: [0xd3c0ff, 0xa88cff, 0x9980ff], // light purple shades
   },
   {
-	name: "Frozen Dream",
-	background: 0x0d1f2f,
-	fog: 0x0d1f2f,
-	terrainColor: 0x417aad,    // steel blue
-	terrainEmissive: 0x88bfff, // icy blue glow
-	sphereColors: [0xaaddff, 0x77bbff, 0x99ccff], // icy blues and cyan
+    name: "Frozen Dream",
+    background: 0x0d1f2f,
+    fog: 0x0d1f2f,
+    terrainColor: 0x417aad,    // steel blue
+    terrainEmissive: 0x88bfff, // icy blue glow
+    sphereColors: [0xaaddff, 0x77bbff, 0x99ccff], // icy blues and cyan
   },
   {
-	name: "Pink Nebula",
-	background: 0x210028,
-	fog: 0x210028,
-	terrainColor: 0x9a5c8f,    // dusty pink-purple
-	terrainEmissive: 0xd480ff, // bright pink glow
-	sphereColors: [0xff99ff, 0xff77ff, 0xe666ff], // neon pinks & purples
+    name: "Pink Nebula",
+    background: 0x210028,
+    fog: 0x210028,
+    terrainColor: 0x9a5c8f,    // dusty pink-purple
+    terrainEmissive: 0xd480ff, // bright pink glow
+    sphereColors: [0xff99ff, 0xff77ff, 0xe666ff], // neon pinks & purples
   },
   {
-	name: "Blue Aura",
-	background: 0x121b31,
-	fog: 0x121b31,
-	terrainColor: 0x486fbd,    // vibrant blue
-	terrainEmissive: 0x88aaff, // soft blue glow
-	sphereColors: [0x77aaff, 0x5599ff, 0x33aaff], // cool blue gradients
+    name: "Blue Aura",
+    background: 0x121b31,
+    fog: 0x121b31,
+    terrainColor: 0x486fbd,    // vibrant blue
+    terrainEmissive: 0x88aaff, // soft blue glow
+    sphereColors: [0x77aaff, 0x5599ff, 0x33aaff], // cool blue gradients
   },
 ];
 
@@ -60,7 +62,17 @@ const combo = combos[currentCombo];
 
 scene.fog = new THREE.FogExp2(combo.fog, 0.02);
 
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 15, 30);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(combo.background);
+document.body.appendChild(renderer.domElement);
+
 // Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
 dirLight.position.set(0, 50, 30);
 scene.add(dirLight);
@@ -95,16 +107,16 @@ function fractalNoise(x, y, z) {
   let max = 0;
 
   for (let i = 0; i < 3; i++) {
-	total += noise3D(x * frequency, y * frequency, z * frequency) * amplitude;
-	max += amplitude;
-	frequency *= 2;
-	amplitude *= 0.3;
+    total += noise3D(x * frequency, y * frequency, z * frequency) * amplitude;
+    max += amplitude;
+    frequency *= 2;
+    amplitude *= 0.3;
   }
 
   return total / max;
 }
 
-//GLOW SPHERES
+// Glow spheres with random hue shifts around combo.sphereHueBase
 const glowSpheres = [];
 const sphereCount = 30;
 const sphereGeometry = new THREE.SphereGeometry(0.35, 16, 16);
@@ -113,12 +125,12 @@ const createMagicGlowMaterial = (baseHue) => {
   const hue = baseHue + (Math.random() - 0.5) * 0.2;
   const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
   return new THREE.MeshBasicMaterial({
-	color: color.getHex(),
-	transparent: true,
-	opacity: 0.5,
-	blending: THREE.AdditiveBlending,
-	depthWrite: false,
-	toneMapped: false,
+    color: color.getHex(),
+    transparent: true,
+    opacity: 0.5,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    toneMapped: false,
   });
 };
 
@@ -126,47 +138,66 @@ for (let i = 0; i < sphereCount; i++) {
   const mat = createMagicGlowMaterial(combo.sphereHueBase);
   const sphere = new THREE.Mesh(sphereGeometry, mat);
   sphere.position.set(
-	(Math.random() - 0.5) * width,
-	-1.7 - Math.random() * 0.6,
-	(Math.random() - 0.5) * depth
+    (Math.random() - 0.5) * width,
+    -1.7 - Math.random() * 0.6,
+    (Math.random() - 0.5) * depth
   );
   scene.add(sphere);
   glowSpheres.push(sphere);
 }
 
-//ANIMATIONS:
 function updateTerrain(deltaTime) {
   scroll -= 0.5 * deltaTime;
 
   for (let i = 0; i < position.count; i++) {
-	const x = position.getX(i);
-	const z = position.getZ(i);
+    const x = position.getX(i);
+    const z = position.getZ(i);
 
-	const peakFactor = Math.pow(Math.abs(x) / (width / 2), 1);
+    const peakFactor = Math.pow(Math.abs(x) / (width / 2), 1);
 
-	let y = fractalNoise(x * 0.1, 0, (z + scroll * 0.5) * 0.1);
-	y *= 200 * peakFactor;
+    let y = fractalNoise(x * 0.1, 0, (z + scroll * 0.5) * 0.1);
+    y *= 200 * peakFactor;
 
-	smoothedYs[i] = THREE.MathUtils.lerp(smoothedYs[i], y, 0.02);
-	position.setY(i, smoothedYs[i]);
+    smoothedYs[i] = THREE.MathUtils.lerp(smoothedYs[i], y, 0.02);
+    position.setY(i, smoothedYs[i]);
   }
 
   position.needsUpdate = true;
   geometry.computeVertexNormals();
 
+  // Animate glow spheres: pulse opacity and gentle vertical bobbing
   const time = performance.now() * 0.002;
   glowSpheres.forEach((sphere, i) => {
-	const pulse = 0.4 + 0.6 * Math.sin(time * 2 + i);
-	sphere.material.opacity = pulse * 0.6;
-	sphere.position.y = -1.7 + 0.3 * Math.sin(time * 1.5 + i);
+    const pulse = 0.4 + 0.6 * Math.sin(time * 2 + i);
+    sphere.material.opacity = pulse * 0.6;
+    sphere.position.y = -1.7 + 0.3 * Math.sin(time * 1.5 + i);
   });
 }
-
+const miner = 
+scene.add()
+let playing = false;
 let lastTime = performance.now();
-
+updateTerrain(0)
 function animate() {
+  requestAnimationFrame(animate);
   const now = performance.now();
   const deltaTime = (now - lastTime) / 16.67;
   lastTime = now;
-  updateTerrain(deltaTime);
+	if (playing) updateTerrain(deltaTime);
+  renderer.render(scene, camera);
 }
+
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+window.addEventListener('keydown', (event) => {
+	if (event.key === 'Enter') {
+	  playing = !playing;
+	  console.log('Enter pressed! playing =', playing);
+	}
+});
