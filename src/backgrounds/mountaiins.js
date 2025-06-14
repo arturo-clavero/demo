@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { createNoise3D } from 'simplex-noise';
-import { deltaTime } from 'three/tsl';
+import Engine from '../core/Engine';
+
 const noise3D = createNoise3D();
 
-const scene = new THREE.Scene();
+const scene = new THREE.Group();
 
 const combos = [
   {
@@ -60,22 +61,6 @@ const combos = [
 const currentCombo = 0;
 const combo = combos[currentCombo];
 
-scene.fog = new THREE.FogExp2(combo.fog, 0.02);
-
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 15, 30);
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(combo.background);
-document.body.appendChild(renderer.domElement);
-
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-dirLight.position.set(0, 50, 30);
-scene.add(dirLight);
 
 // Geometry
 const width = 150;  // Wide terrain
@@ -173,31 +158,40 @@ function updateTerrain(deltaTime) {
     sphere.position.y = -1.7 + 0.3 * Math.sin(time * 1.5 + i);
   });
 }
-const miner = 
-scene.add()
+
 let playing = false;
 let lastTime = performance.now();
 updateTerrain(0)
 function animate() {
-  requestAnimationFrame(animate);
   const now = performance.now();
   const deltaTime = (now - lastTime) / 16.67;
   lastTime = now;
 	if (playing) updateTerrain(deltaTime);
-  renderer.render(scene, camera);
 }
 
-animate();
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-window.addEventListener('keydown', (event) => {
+function keydown(event){
 	if (event.key === 'Enter') {
 	  playing = !playing;
 	  console.log('Enter pressed! playing =', playing);
 	}
-});
+};
+scene.position.y += -20;
+scene.rotation.x += Math.PI/7;
+export const mountains = {
+	name : "mountains",
+	enter: ()=>{
+		new Engine().scene.fog = new THREE.Fog(combo.fog, 30, 100);  // ✅ set fog here
+		scene.visible = true;
+	},
+	exit: ()=>{
+		new Engine().scene.fog = null;
+		scene.visible = false;
+		playing = false;
+	},
+	animate: (time)=>{animate(time)},
+	keydown: (event) => {
+		keydown(event);
+	}
+}
+mountains.exit()
+export const mountains_group = scene;

@@ -7,13 +7,16 @@ export default class State{
 		exit = ()=>{}, 
 		animate = ()=>{}, 
 		resize = ()=>{},
+		keydown = ()=>{}
 	}){
 		this.name = name;
 		this.enter = enter;
 		this.exit = exit;
 		this.animate = (time)=>{
-			console.log("animations for ", this.name)
 			animate(time);
+		}
+		this.keydown = (event)=>{
+			keydown(event);
 		}
 		this.resize = resize;
 		this.exit();

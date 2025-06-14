@@ -25,5 +25,8 @@ export default class StateManager {
 	resize(){
 		if (this.currentState) this.currentState.resize();
 	}
+	keydown(event){
+		if (this.currentState) this.currentState.keydown(event);
+	}
   }
   

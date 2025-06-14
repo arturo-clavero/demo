@@ -110,4 +110,6 @@ export const galaxy = {
 	animate: (time)=>{animate(time)},
 }
 
+galaxy.exit()
+
 export const galaxy_group = scene;
