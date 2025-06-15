@@ -1,9 +1,10 @@
-import * as THREE from 'three';
 import StateManager from './core/StateManager';
 import Engine from './core/Engine';
 import State from './core/State';
 import { galaxy, galaxy_group } from './backgrounds/galaxy';
 import { mountains, mountains_group } from './backgrounds/mountaiins';
+// import BlockChain from './objs/blockchain';
+import * as THREE from 'three';
 
 const stateManager = new StateManager();
 new State(galaxy);

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import StateManager from './StateManager';
-
+import Token from '../objs/token';
+const newMiner = new Token();//TEST DELETE
+newMiner.mesh.position.set(0, 0, -5)
 const stateManager = new StateManager();
 export default class Engine{
 	constructor(){
@@ -12,6 +14,7 @@ export default class Engine{
 		this.setUpAnimation();
 		window.addEventListener('resize', this.resize);
 		Engine.instance = this;
+		this.scene.add(newMiner.mesh); //TEST DELETE
 	}
 	setUpBase(){
 		this.scene = new THREE.Scene();
@@ -23,17 +26,7 @@ export default class Engine{
 	}
 	setUpLights(){
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // white, soft intensity
-this.scene.add(ambientLight);
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // white, brighter
-// directionalLight.position.set(5, 10, 15); // top-right-front
-// directionalLight.castShadow = true;
-// // Make shadows soft
-// this.scene.add(directionalLight);
-// Optional helper to visualize the light direction
-// const helper = new THREE.DirectionalLightHelper(directionalLight, 1);
-// scene.add(helper);
-
-
+		this.scene.add(ambientLight);
 	}
 	setUpAnimation(){
 		this.animate = this.animate.bind(this);
@@ -64,6 +57,7 @@ this.scene.add(ambientLight);
 		// 	)
 		// });
 		stateManager.animate(time)
+		newMiner.animate(time);//TEST DELETE
 		this.renderer.render(this.scene, this.camera);
 	}
 }
