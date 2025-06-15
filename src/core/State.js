@@ -11,6 +11,7 @@ export default class State{
 	}){
 		this.name = name;
 		this.enter = enter;
+		
 		this.exit = exit;
 		this.animate = (time)=>{
 			animate(time);

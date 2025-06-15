@@ -1,31 +1,5 @@
 import * as THREE from 'three';
 
-const scene = new THREE.Group();
-  // Create star particles
-const starCount = 1500;
-const geometry = new THREE.BufferGeometry();
-const positions = [];
-const colors = [];
-
-  // Colors from purple to blue
-const colorPurple = new THREE.Color(0x8a2be2); // blueviolet
-const colorBlue = new THREE.Color(0x0077ff);
-
-for (let i = 0; i < starCount; i++) {
-	// Random position in a cube of size 400 centered at 0
-	const x = (Math.random() - 0.5) * 400;
-	const y = (Math.random() - 0.5) * 400;
-	const z = (Math.random() - 0.5) * 400;
-	positions.push(x, y, z);
-
-	// Interpolate color between purple and blue randomly
-	const color = colorPurple.clone().lerp(colorBlue, Math.random());
-	colors.push(color.r, color.g, color.b);
-  }
-
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-// Create a circular star texture
 function createCircleTexture() {
 	const size = 64;
 	const canvas = document.createElement('canvas');
@@ -46,25 +20,39 @@ function createCircleTexture() {
 	return new THREE.CanvasTexture(canvas);
   }
   
-  const circleTexture = createCircleTexture();
-  
-  // Points material with vertex colors
-  const material = new THREE.PointsMaterial({
-	size: 1.5,
-	vertexColors: true,
-	transparent: true,
-	opacity: 0.9,
-	sizeAttenuation: true,
-	map: circleTexture,      // <- NEW
-	alphaTest: 0.01          // <- Optional but helps remove edge artifacts
-  });
-  
 
-  const stars = new THREE.Points(geometry, material);
-  scene.add(stars);
+function create_stars(){
+	const starCount = 1500;
+	const geometry = new THREE.BufferGeometry();
+	const positions = [];
+	const colors = [];
+	const colorPurple = new THREE.Color(0x8a2be2);
+	const colorBlue = new THREE.Color(0x0077ff);
+	for (let i = 0; i < starCount; i++) {
+		const x = (Math.random() - 0.5) * 400;
+		const y = (Math.random() - 0.5) * 400;
+		const z = (Math.random() - 0.5) * 400;
+		positions.push(x, y, z);
+		const color = colorPurple.clone().lerp(colorBlue, Math.random());
+		colors.push(color.r, color.g, color.b);
+	  }
+	geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+	geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+	const circleTexture = createCircleTexture();
+	const material = new THREE.PointsMaterial({
+		size: 1.5,
+		vertexColors: true,
+		transparent: true,
+		opacity: 0.9,
+		sizeAttenuation: true,
+		map: circleTexture,   
+		alphaTest: 0.01   
+	  });
+	  return new THREE.Points(geometry, material);
+}
 
-  // Background gradient using a large sphere with gradient shader-like material
-  const vertexShader = `
+function create_sky(){
+	const vertexShader = `
 	varying vec3 vPosition;
 	void main() {
 	  vPosition = position;
@@ -82,34 +70,30 @@ function createCircleTexture() {
 	  gl_FragColor = vec4(color, 1.0);
 	}
   `;
-
   const skyGeo = new THREE.SphereGeometry(500, 32, 15);
   const skyMat = new THREE.ShaderMaterial({
 	vertexShader,
 	fragmentShader,
 	side: THREE.BackSide,
   });
-
-  const sky = new THREE.Mesh(skyGeo, skyMat);
-  scene.add(sky);
-
-  // Animate: slowly rotate stars
-function animate(time=0) {
-	console.log("heyyy")
-	stars.rotation.y = time * 0.00001;
+  return new THREE.Mesh(skyGeo, skyMat);
 }
 
-export const galaxy = {
-	name : "galaxy",
-	enter: ()=>{
-		scene.visible = true;
-	},
-	exit: ()=>{
-		scene.visible = false;
-	},
-	animate: (time)=>{animate(time)},
+export default class Galaxy{
+	constructor()
+	{
+		this.mesh = new THREE.Group();
+		this.stars = create_stars();
+		this.mesh.add(this.stars);
+		this.mesh.add(create_sky());
+		this.animate = ()=>{};
+	}
+	move_stars(){
+		this.animate = this.rotate_stars;
+	}
+	rotate_stars(time=0)
+	{
+		this.stars.rotation.y = time * 0.00001;
+	}
 }
 
-galaxy.exit()
-
-export const galaxy_group = scene;

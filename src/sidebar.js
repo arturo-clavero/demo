@@ -27,3 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+document.querySelectorAll('.sidebar li.has-submenu > .label').forEach(label => {
+	label.addEventListener('click', () => {
+	  const parent = label.parentElement;
+	  parent.classList.toggle('active');
+	});
+  });
+  

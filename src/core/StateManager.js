@@ -1,3 +1,4 @@
+import Engine from "./Engine";
 
 export default class StateManager {
 	constructor() {
@@ -13,10 +14,23 @@ export default class StateManager {
 		this.states.push(state);
 		this.names[state.name] = this.states.length - 1;
 	}
-	switchState(name) {
-		if (this.currentState && this.currentState.name == name) return;
-		if (this.currentState) this.currentState.exit();
-		this.currentState = this.states[this.names[name]];
+	switchState(name = null, move) {
+		if (name == null && this.currentState == null)
+		{
+			if (this.states.length == 0) return;
+			this.currentState = this.states[0];
+		}
+		else if (name == null){
+			let i = this.names[this.currentState.name] + move;
+			if (i >= this.states.length || i < 0) return;
+			this.currentState.exit();
+			this.currentState = this.states[i]
+		}
+		else if(this.currentState && this.currentState.name == name) return;
+		else{
+			if (this.currentState) this.currentState.exit();
+			this.currentState = this.states[this.names[name]];
+		}
 		this.currentState.enter();
 	}
 	animate(time){

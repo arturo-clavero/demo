@@ -134,3 +134,9 @@ body {
 	transition: stroke 0.3s ease;
   }
    */
+   .icon-combo {
+	width: 18px !important;
+	height: 18px !important;
+	margin-right: 0px;  /* small space between icons */
+	vertical-align: middle;
+  }

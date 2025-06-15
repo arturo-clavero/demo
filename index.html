@@ -5,11 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blockchain Demo</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-    }
+	html, body {
+  margin: 0;
+  padding: 0;
+  height: 200vh;   /* enough height to scroll */
+  overflow-y: scroll;
+  background: black;
+
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+  canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;  /* Allow scroll events to reach the page */
+}
+
   </style>
 <link rel="stylesheet" href="styles/sidebar.css" />
 </head>
@@ -19,11 +38,13 @@
 <div class="sidebar expanded">
 	<button class="toggle-btn">☰</button>
 	<ul>
-	  <li class="active" data-scene="galaxy"><i data-feather="home"></i><span class="label">Home</span></li>
-	  <li data-scene="mountains"><i data-feather="compass"></i><span class="label">Explore</span></li>
-	  <li data-scene="realms"><i data-feather="layers"></i><span class="label">Realms</span></li>
-	  <li data-scene="constellations"><i data-feather="star"></i><span class="label">Constellations</span></li>
-	  <li data-scene="settings"><i data-feather="settings"></i><span class="label">Settings</span></li>
+	  <li class="active" data-scene="intro"><i data-feather="book-open"></i><span class="label">Introduction</span></li>
+	  <li data-scene="mountains"><i data-feather="user"></i><span class="label">Nodes</span></li>
+	  <li data-scene="mountains"><i data-feather="award"></i><span class="label">Mining</span></li>
+	  <li data-scene="mountains"><i data-feather="zap"></i><span class="label">Proof of Work</span></li>
+	  <li data-scene="mountains"><i data-feather="thumbs-up"></i><span class="label">Concensus</span></li>
+	  <li data-scene="realms"><i data-feather="box"></i><span class="label">Blocks</span></li>
+	  <li data-scene="constellations"><i data-feather="send"></i><span class="label">Transactions</span></li>
 	</ul>
   </div>
   

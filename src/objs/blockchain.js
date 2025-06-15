@@ -5,9 +5,11 @@ export default class BlockChain{
 	constructor(blocks = 4, theme = 0, blockSize = 1, chainLen = 1){
 		set_materials(theme);
 		this.mesh = new THREE.Group();
+		this.container = new THREE.Group();
+		this.mesh.add(this.container);
 		const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
 		directionalLight.position.set(6, 10, 0);
-		this.mesh.add(directionalLight);
+		this.container.add(directionalLight);
 		this.totalBlocks = 0;
 		this.totalChains = 0;
 		this.blockSize = blockSize;
@@ -22,12 +24,16 @@ export default class BlockChain{
 		if (this.totalBlocks >= 1) {
 			this.addChain();
 		}
-		if (blockGroup == null) blockGroup = create_block(this.blockSize);
+		if (blockGroup == null) 
+			blockGroup = create_block(this.blockSize);
+		else
+			console.log("blockgroup already give..")
+		console.log("its -> ", blockGroup)
 		const offsetX = this.totalBlocks * this.blockSize + this.totalChains * this.chainLen;
-		blockGroup.position.x = offsetX;
 
 		this.blocks.push(blockGroup);
-		this.mesh.add(blockGroup);
+		blockGroup.position.set(offsetX, 0, 0);
+		this.container.add(blockGroup);
 		this.totalBlocks++;
 		this.innerObjs[this.totalBlocks] = [];
 		if (this.totalBlocks > 1) this.moveX -= this.blockSize / 2; 
@@ -40,7 +46,7 @@ export default class BlockChain{
 		const offsetX = (this.totalBlocks - 0.5) * this.blockSize + this.totalChains * this.chainLen ;
 		chain.position.x = offsetX;
 		
-		this.mesh.add(chain);
+		this.container.add(chain);
 		this.totalChains++;
 		this.moveX -= this.chainLen / 2;
 	}
@@ -54,7 +60,10 @@ export default class BlockChain{
 		this.innerObjs[block_index].push(mesh);
 	}
 	center() {
-		this.mesh.position.x += this.moveX;
+		console.log("this move-> ", this.moveX)
+		console.log("before: ", this.container.position.x)
+		this.container.position.x += this.moveX;
+		console.log("after: ", this.container.position.x)
 		this.moveX = 0;
 	}
 

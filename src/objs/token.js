@@ -29,10 +29,10 @@ function material(theme) {
   
 
 export default class Token {
-	constructor(theme = 3) {
+	constructor(theme = 3, rad =1) {
 		this.mesh = new THREE.Group();
 	  
-		const geometry = new THREE.CylinderGeometry(1, 1, 0.2, 32);
+		const geometry = new THREE.CylinderGeometry(rad, rad, rad * 0.2, 32);
 		const mat = material(theme);
 		const tokenMesh = new THREE.Mesh(geometry, mat);
 	  
@@ -46,7 +46,7 @@ export default class Token {
 		this.mesh.add(tokenMesh);
 		this.mesh.add(edgeLines);
 	  
-		const radius = 0.8;
+		const radius = rad * 0.8;
 		const segments = 64;
 		const circleGeometry = new THREE.CircleGeometry(radius, segments);
 		const edgesGeometry = new THREE.EdgesGeometry(circleGeometry);
@@ -58,10 +58,10 @@ export default class Token {
 		});
 	  const outlines = new THREE.Group();
 		const frontOutline = new THREE.LineSegments(edgesGeometry, outlineMaterial);
-		frontOutline.position.z = 0.11;
+		frontOutline.position.z = 0.11 * rad;
 		outlines.add(frontOutline);
 		const backOutline = new THREE.LineSegments(edgesGeometry, outlineMaterial);
-		backOutline.position.z = -0.11;
+		backOutline.position.z = -0.11 * rad;
 		outlines.add(backOutline);
 		outlines.rotation.x = Math.PI * 0.5;
 		this.mesh.add(outlines)
@@ -76,7 +76,7 @@ export default class Token {
 		this.speed = 0.1;
 		this.startTime = 0;
 	  
-		this.jump();
+		// this.jump();
 	  }
 	  
 	  
