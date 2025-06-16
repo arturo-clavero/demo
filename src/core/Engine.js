@@ -15,6 +15,9 @@ export default class Engine{
 		Engine.instance = this;
 		// this.scene.add(newMiner.mesh); //TEST DELETE
 		this.resize();
+		this.camera.position.set(0, 3, 5)
+		this.camera.lookAt(0, 4, -1)
+		this.lookAt = new THREE.Vector3(0, 4, -1)
 	}
 	setUpBase(){
 		this.scene = new THREE.Scene();

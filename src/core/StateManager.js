@@ -28,7 +28,7 @@ export default class StateManager {
 		}
 		else if(this.currentState && this.currentState.name == name) return;
 		else{
-			if (this.currentState) this.currentState.exit();
+			if (this.currentState) this.currentState.exit(name);
 			this.currentState = this.states[this.names[name]];
 		}
 		this.currentState.enter();

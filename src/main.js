@@ -2,18 +2,22 @@ import StateManager from './core/StateManager';
 import Engine from './core/Engine';
 import State from './core/State';
 import * as THREE from 'three';
+import gsap from 'gsap';
 import { intro, intro_group, intro_scroll } from './scenes/scene1';
+import { mining, mining_group } from './scenes/scene2';
 
 const stateManager = new StateManager();
 new State(intro);
 new State(intro_scroll);
+new State(mining);
 // new State(galaxy);
 // new State(mountains);
 
-stateManager.switchState("intro");
+stateManager.switchState("mining");
 
 const engine = new Engine();
 engine.scene.add(intro_group);
+engine.scene.add(mining_group);
 // engine.scene.add(galaxy_group);
 // engine.scene.add(mountains_group);
 
@@ -31,47 +35,46 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('keydown', (event)=>{
+	console.log("in main key down")
 	stateManager.keydown(event);
 })
-import gsap from 'gsap';
 
-const originalCamY = engine.camera.position.y;
-const scrollThreshold = 100;
-const camMoveAmount = 0.05;
-let windowStateChanged = false;
-let currentTween = null;
+//SCROLL
+// let lastScrollY = window.scrollY;
+// let currentTween = null;
+// const originalCamY = engine.camera.position.y;
+// const scrollThreshold = 50;
+// const camMoveAmount = 0.01;
 
-window.addEventListener('scroll', () => {
-  const newScroll = window.scrollY;
+// let directionLock = null; // "up" or "down" — only switch once per direction
 
-  if (newScroll <= scrollThreshold) {
-    const t = newScroll / scrollThreshold;
-    const targetY = originalCamY + t * camMoveAmount;
+// window.addEventListener('scroll', () => {
+//   const newScrollY = window.scrollY;
+//   const delta = newScrollY - lastScrollY;
 
-    if (currentTween) currentTween.kill(); // cancel previous tween
+//   const isScrollingDown = delta > 0;
+//   const isScrollingUp = delta < 0;
 
-    currentTween = gsap.to(engine.camera.position, {
-      y: targetY,
-      duration: 0.3,
-      ease: 'power2.out',
-    });
+//   const t = Math.min(newScrollY, scrollThreshold) / scrollThreshold;
+//   const targetY = originalCamY + t * camMoveAmount;
 
-    if (windowStateChanged) {
-      stateManager.switchState(null, -1);
-      windowStateChanged = false;
-    }
-  } else {
-    if (currentTween) currentTween.kill();
+//   // Animate camera position
+//   if (currentTween) currentTween.kill();
+//   currentTween = gsap.to(engine.camera.position, {
+//     y: targetY,
+//     duration: 0.3,
+//     ease: 'power2.out',
+//   });
 
-    currentTween = gsap.to(engine.camera.position, {
-      y: originalCamY + camMoveAmount,
-      duration: 0.3,
-      ease: 'power2.out',
-    });
+//   // Only switch state if not already locked for this direction
+//   if (isScrollingDown && directionLock !== "down") {
+//     console.log("next state");
+//     stateManager.switchState(null, 1);
+//     directionLock = "down";
+//   } else if (isScrollingUp && directionLock !== "up") {
+//     stateManager.switchState(null, -1);
+//     directionLock = "up";
+//   }
 
-    if (!windowStateChanged) {
-      stateManager.switchState(null, 1);
-      windowStateChanged = true;
-    }
-  }
-});
+//   lastScrollY = newScrollY;
+// });

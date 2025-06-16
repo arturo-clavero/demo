@@ -125,19 +125,21 @@ export default class Miner {
 		pos.z = this.amplitude[2] * Math.sin(elapsed * this.frequency * 0.8);
 	}
 
-	run(speed = 1) {
+	run(speed = 1, vel = 0) {
+		console.log("run!")
 		this.setRingsVisible(true);
 		this.speed = speed;
-		this.animate = this.rotate_rings.bind(this);
+		this.animate = ()=> this.rotate_rings.bind(this);
 	}
 	rotate_rings() {
+		console.log("rotate tings")
 		this.rings.forEach((ring, i) => {
 			ring.rotation.x += this.speed + i * 0.05;
 		});
 	}
 	move([x, y, z], duration = 1) {
 		// this.run(1/ duration * 0.1)
-		this.setRingsVisible(false);
+		if (this.animate != this.rotate_rings) this.setRingsVisible(false);
 		this.stopGsap();
 		gsap.to(this.mesh.position, {
 			x, y, z,

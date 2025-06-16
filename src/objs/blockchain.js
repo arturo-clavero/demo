@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { set_materials, create_block, createChainLink} from './blockchain_utils';
+import gsap from 'gsap';
 
 export default class BlockChain{
 	constructor(blocks = 4, theme = 0, blockSize = 1, chainLen = 1){
@@ -65,6 +66,21 @@ export default class BlockChain{
 		this.container.position.x += this.moveX;
 		console.log("after: ", this.container.position.x)
 		this.moveX = 0;
+	}
+	stopGsap() {
+		this.animate = ()=>{}
+		if (this.tween) {
+		  this.tween.kill();
+		  this.tween = null;
+		}
+	  }
+	move([x, y, z], duration = 1) {
+		this.stopGsap();
+		gsap.to(this.mesh.position, {
+			x, y, z,
+			duration,
+			ease: "power1.out"
+		});
 	}
 
 }
