@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Token from '../objs/token';
+import Token from '../objs/Token';
 // const newMiner = new Token();//TEST DELETE
 // newMiner.mesh.position.set(0, 0, -5)
 export default class Engine{

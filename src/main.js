@@ -4,22 +4,24 @@ import State from './core/State';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { intro, intro_group, intro_scroll } from './scenes/scene1';
-import { mining, mining_group } from './scenes/scene2';
+import { transactions, transactions_group } from './scenes/scene2';
+
+// import { mining, mining_group } from './scenes/scene2';
 
 const stateManager = new StateManager();
 new State(intro);
 new State(intro_scroll);
-new State(mining);
-// new State(galaxy);
-// new State(mountains);
+new State(transactions);
+// new State(mining);
 
-stateManager.switchState("mining");
+
+stateManager.switchState("transactions");
 
 const engine = new Engine();
 engine.scene.add(intro_group);
-engine.scene.add(mining_group);
-// engine.scene.add(galaxy_group);
-// engine.scene.add(mountains_group);
+engine.scene.add(transactions_group);
+// engine.scene.add(mining_group);
+
 
 function animate(time){
 		requestAnimationFrame(animate);

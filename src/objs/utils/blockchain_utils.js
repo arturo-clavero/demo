@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import ObjectMovement from '../../core/ObjectMovement';
 
 //THEMES
 const themes = [
@@ -99,7 +100,9 @@ export function set_materials(themeNum){
 }
 
 export function create_block(size){
-	const blockGroup = new THREE.Group();
+	const obj = new ObjectMovement(new THREE.Group());
+	const blockGroup = obj.mesh;
+	
 	const blockGeometry = new THREE.BoxGeometry(size, size, size);
 	const block = new THREE.Mesh(
 		blockGeometry,
@@ -131,7 +134,7 @@ export function create_block(size){
 		glow.scale.multiplyScalar(1 + i * 0.15); // slightly bigger
 		blockGroup.add(glow);
 	}
-	return blockGroup;
+	return obj;
 }
 //CONSTANTS
 const rad = 0.5;
@@ -146,7 +149,7 @@ function createRing(type = 0) {
 	return link;
 }
   
-export function createChainLink(numLinks = 3) {
+export function createChainLink(numLinks = 3, chainLen) {
 	let total = 0;
 	const chainGroup = new THREE.Group();
 	const spacing = (rad + (thick * 0.5));
@@ -173,7 +176,7 @@ export function createChainLink(numLinks = 3) {
 	box.getSize(size);
 
 	const totalLength = size.x; 
-	const reduce = 1 / totalLength;
+	const reduce = chainLen / totalLength;
 	chainGroup.scale.set(reduce, reduce, reduce);
 
 	return chainGroup;

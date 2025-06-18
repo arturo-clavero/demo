@@ -7,7 +7,7 @@ export default class State{
 	constructor({
 		name = null, 
 		default_cam_pos = [0, 0, 5],
-		target_lookat = [0, 0, -1],
+		// target_lookat = [0, 0, -1],
 		duration = 2,
 		enter = ()=>{}, 
 		exit = ()=>{}, 
@@ -18,11 +18,12 @@ export default class State{
 		this.name = name;
 		this.duration = duration;
 		this.default_cam_pos = default_cam_pos;
-		this.target_lookat = target_lookat;
+		// this.target_lookat = target_lookat;
 		this.enter = ()=>{
 			enter();
 			const engine = new Engine();
 		const og_lookat = engine.lookAt.clone();
+		return new Promise(resolve => {
 		gsap.to(engine.camera.position, {
 			x: this.default_cam_pos[0],
 			y: this.default_cam_pos[1],
@@ -33,17 +34,11 @@ export default class State{
 				engine.lookAt = og_lookat.clone();
 			},
 			onComplete: ()=>{
-				engine.camera.lookAt(og_lookat); // update camera orientation
+				resolve();
+				// engine.camera.lookAt(og_lookat); // update camera orientation
 			}
 		});	
-		gsap.to(og_lookat, {
-			x: this.target_lookat[0],
-			y: this.target_lookat[1],
-			z: this.target_lookat[2],
-			duration: this.duration,
-			onUpdate: () => {
-			}
-		  });
+	});	
 		}
 
 		this.exit = exit;

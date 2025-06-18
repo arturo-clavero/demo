@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 function createCircleTexture() {
@@ -21,7 +22,7 @@ function createCircleTexture() {
   }
   
 
-function create_stars(){
+export function create_stars(){
 	const starCount = 1500;
 	const geometry = new THREE.BufferGeometry();
 	const positions = [];
@@ -51,7 +52,7 @@ function create_stars(){
 	  return new THREE.Points(geometry, material);
 }
 
-function create_sky(){
+export function create_sky(){
 	const vertexShader = `
 	varying vec3 vPosition;
 	void main() {
@@ -78,22 +79,3 @@ function create_sky(){
   });
   return new THREE.Mesh(skyGeo, skyMat);
 }
-
-export default class Galaxy{
-	constructor()
-	{
-		this.mesh = new THREE.Group();
-		this.stars = create_stars();
-		this.mesh.add(this.stars);
-		this.mesh.add(create_sky());
-		this.animate = ()=>{};
-	}
-	move_stars(){
-		this.animate = this.rotate_stars;
-	}
-	rotate_stars(time=0)
-	{
-		this.stars.rotation.y = time * 0.00001;
-	}
-}
-

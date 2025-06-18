@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import { loadTextureAsync } from '../core/utils';
 
-const nodeThemes = {
+export const nodeThemes = {
 	0: { // Sunset
 	  lineColor: 0xff9933,
 	  glowColor: 0xffcc66,
@@ -31,8 +30,8 @@ const nodeThemes = {
   
 export function createDecentralizedGroup({
   count = 20,
-  width = 10,
-  height = 1.3,
+  width = 5,
+  height = 2,
   z = 0,
   minRadius = 0.06,
   maxRadius = 0.1,
@@ -93,13 +92,14 @@ export function createDecentralizedGroup({
     if (attempts > maxAttempts) continue; // skip if failed
 
     const sphereGeo = new THREE.SphereGeometry(radius, 32, 32);
-    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+	const sphere = new THREE.Mesh(sphereGeo, sphereMat.clone());
+	sphere.userData.type ="node"
     sphere.position.copy(pos);
 	sphere.scale.set(1, 1, 1);
     group.add(sphere);
 
     const glowGeo = new THREE.SphereGeometry(radius * 1.3, 32, 32);
-    const glowSphere = new THREE.Mesh(glowGeo, glowMat);
+    const glowSphere = new THREE.Mesh(glowGeo, glowMat.clone());
     glowSphere.position.copy(pos);
     group.add(glowSphere);
 
@@ -114,23 +114,78 @@ export function createDecentralizedGroup({
   return group;
 }
   
-export async function create_earth(rad = 5) {
-	const texture = await loadTextureAsync('textures/earth2.jpg');
+export function createCentralizedGroup({
+	count = 12,
+	radius = 0.08,
+	centerRadiusMultiplier = 2,
+	circleRadius = 1.5,
+	theme = 0,
+  } = {}) {
+	const group = new THREE.Group();
+	const colors = nodeThemes[theme] || nodeThemes[0];
   
-	const material = new THREE.MeshStandardMaterial({
-	  map: texture,
+	const lineColor = new THREE.Color(colors.lineColor);
+	const glowColor = new THREE.Color(colors.glowColor);
+	const sphereColor = new THREE.Color(colors.sphereColor);
+  
+	const sphereMat = new THREE.MeshStandardMaterial({
+	  color: sphereColor,
+	  roughness: 0.5,
+	  metalness: 0.3,
 	});
   
-	const geo = new THREE.SphereGeometry(rad, 32, 32);
-	const mesh = new THREE.Mesh(geo, material);
-	const a = 0x66bbff	
-	const b = 0x0099ff
-	const c = 0xa0dfff
-	const sunlight = new THREE.DirectionalLight(b, 5);
-	sunlight.position.set(5, 25, -10);
-	const group = new THREE.Group();
-	group.add(mesh);
-	group.add(sunlight);
+	const glowMat = new THREE.MeshBasicMaterial({
+	  color: glowColor,
+	  transparent: true,
+	  opacity: 0.6,
+	  blending: THREE.AdditiveBlending,
+	  depthWrite: false,
+	});
+  
+	const lineMat = new THREE.LineBasicMaterial({
+	  color: lineColor,
+	  transparent: true,
+	  opacity: 0.8,
+	});
+  
+	// Create central node
+	const centerRadius = radius * centerRadiusMultiplier;
+	const centerPos = new THREE.Vector3(0, 0, 0);
+  
+	const centerGeo = new THREE.SphereGeometry(centerRadius, 32, 32);
+	const centerSphere = new THREE.Mesh(centerGeo, sphereMat.clone());
+	centerSphere.position.copy(centerPos);
+	group.add(centerSphere);
+  
+	const centerGlowGeo = new THREE.SphereGeometry(centerRadius * 1.3, 32, 32);
+	const centerGlow = new THREE.Mesh(centerGlowGeo, glowMat);
+	centerGlow.position.copy(centerPos);
+	group.add(centerGlow);
+  
+	// Create outer nodes in a circle
+	const angleStep = (Math.PI * 2) / count;
+	for (let i = 0; i < count; i++) {
+	  const angle = i * angleStep;
+	  const x = Math.cos(angle) * circleRadius;
+	  const y = Math.sin(angle) * circleRadius;
+	  const pos = new THREE.Vector3(x, y, 0);
+  
+	  const sphereGeo = new THREE.SphereGeometry(radius, 32, 32);
+	  const sphere = new THREE.Mesh(sphereGeo, sphereMat.clone());
+	  sphere.position.copy(pos);
+	  group.add(sphere);
+  
+	  const glowGeo = new THREE.SphereGeometry(radius * 1.3, 32, 32);
+	  const glow = new THREE.Mesh(glowGeo, glowMat);
+	  glow.position.copy(pos);
+	  group.add(glow);
+  
+	  // Line to center
+	  const lineGeo = new THREE.BufferGeometry().setFromPoints([centerPos, pos]);
+	  const line = new THREE.Line(lineGeo, lineMat);
+	  group.add(line);
+	}
+  
 	return group;
   }
   
