@@ -36,13 +36,43 @@ body::-webkit-scrollbar {
 	<h1 id="scene-title"></h1>
 
  <!-- Sidebar -->
+ <div id="topTitle" style="
+position: fixed;
+top: 80px;
+left: 50%;
+transform: translateX(-50%);
+color: #6ecbff; /* Neon blue text */
+font-size: 32px;
+font-weight: 600;
+font-family: 'Segoe UI', sans-serif;
+background: rgba(255, 255, 255, 0.1); /* Slightly brighter transparent background */
+padding: 18px 42px;
+border-radius: 999px;
+border: 2px solid #6ecbff; /* Neon blue outline */
+backdrop-filter: blur(12px);
+box-shadow:
+  0 0 8px 2px rgba(110, 203, 255, 0.8),
+  0 0 20px 6px rgba(110, 203, 255, 0.6),
+  0 0 30px 12px rgba(110, 203, 255, 0.4);
+display: none;
+opacity: 0;
+z-index: 9999;
+transition: opacity 0.5s ease;
+pointer-events: none;
+user-select: none;
+
+"></div>
+
+
+ <div id="statusBanner">⏸</div>
+
 <div class="sidebar expanded">
 	<button class="toggle-btn">☰</button>
 	<ul>
 	  <li class="active" data-scene="intro"><i data-feather="book-open"></i><span class="label">Introduction</span></li>
-	  <li data-scene="decentralization"><i data-feather="circle"></i><span class="label">Decentralization</span></li>
+	  <li data-scene="decentralization"><i data-feather="share-2"></i><span class="label">Decentralization</span></li>
 	  <li data-scene="transactions"><i data-feather="send"></i><span class="label">Transactions</span></li>
-
+<!-- 
 	  <li data-scene="nodes"><i data-feather="nodes"></i><span class="label">Verification</span></li>
 	  <li data-scene="miners"><i data-feather="agree"></i><span class="label">Agreement</span></li>
 	  <li data-scene="pow"><i data-feather="circle"></i><span class="label">Proof of Work</span></li>
@@ -53,7 +83,7 @@ body::-webkit-scrollbar {
 
 	  <li data-scene="pow"><i data-feather="zap"></i><span class="label">Tokens</span></li>
 
-	  <li data-scene="mining"><i data-feather="award"></i><span class="label">Failures</span></li>
+	  <li data-scene="mining"><i data-feather="award"></i><span class="label">Failures</span></li> -->
 	</ul>
   </div>
   

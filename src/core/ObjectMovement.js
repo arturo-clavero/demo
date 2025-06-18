@@ -210,7 +210,7 @@ export default class ObjectMovement {
 			}
 		  }
 		}
-		pulse(scaleMin = 0.9, scaleMax = 1.1, duration = 0.6, pulses = 3) {
+		pulse(scaleMin = 0.9, scaleMax = 1.1, duration = 0.6, pulses = 3, vanish = false) {
 			this.stopGsap(); // Stop any running animations
 		
 			return new Promise(resolve => {
@@ -226,13 +226,27 @@ export default class ObjectMovement {
 					ease: "sine.inOut",
 					onComplete: () => {
 						this.tween = null;
-						this.mesh.scale.set(1, 1, 1); // reset to normal
-						resolve();
+		
+						if (vanish) {
+							// Animate scale down to 0 after pulse finishes
+							gsap.to(this.mesh.scale, {
+								x: 0,
+								y: 0,
+								z: 0,
+								duration: 0.3,
+								ease: "power2.in",
+								onComplete: resolve
+							});
+						} else {
+							// Reset scale to normal
+							this.mesh.scale.set(1, 1, 1);
+							resolve();
+						}
 					}
 				});
 			});
 		}
-
+		
 		stopPulse() {
 			this.stopGsap();
 			this.mesh.scale.set(1, 1, 1); // Reset to original scale if needed

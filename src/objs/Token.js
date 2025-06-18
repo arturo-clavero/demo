@@ -135,8 +135,8 @@ update_number(num){
 		this.textMesh.material.map.needsUpdate = true;
 	}
 
-async disappear(pulses = 5){
-	await this.pulse(0.8, 1.2, 0.6, pulses);
+async disappear(pulses = 1){
+	await this.pulse(0.8, 1.2, 0.4, pulses, true);
 	await this.vanish(1);
 	this.delete();
 }

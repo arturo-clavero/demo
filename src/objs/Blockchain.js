@@ -27,7 +27,7 @@ export default class BlockChain extends ObjectMovement{
 	async attachBlock(blockGroup, transition, scale = -1)
 	{
 		const offsetX = (this.totalBlocks + 1) * this.blockSize + (this.totalChains + 1) * this.chainLen;
-		await this.move(this.addPos([- this.blockSize * 2, 0, 0]));
+		await this.move(this.addPos([- this.blockSize * 2, 0, 0], 1));
 // Step 1: Create a temp object inside the container to compute world position
 const temp = new THREE.Object3D();
 temp.position.set(offsetX, 0, 0); // offsetX is local inside container

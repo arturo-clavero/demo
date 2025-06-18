@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { intro, intro_group, intro_scroll } from './scenes/scene1';
 import { transactions, transactions_group } from './scenes/scene2';
+import { currentAction } from './core/ActionLink';
 
 // import { mining, mining_group } from './scenes/scene2';
 
@@ -15,7 +16,8 @@ new State(transactions);
 // new State(mining);
 
 
-stateManager.switchState("transactions");
+// stateManager.switchState("transactions");
+stateManager.switchState()
 
 const engine = new Engine();
 engine.scene.add(intro_group);
@@ -36,10 +38,26 @@ window.addEventListener('resize', () => {
 	stateManager.resize();
 });
 
-window.addEventListener('keydown', (event)=>{
-	console.log("in main key down")
+
+const banner = document.getElementById("statusBanner");
+
+window.addEventListener('keydown', (event) => {
 	stateManager.keydown(event);
-})
+
+	if (event.key === "Enter" && currentAction && currentAction.paused) {
+		currentAction.resume();
+		banner.textContent = "▶";
+		banner.style.display = "block";
+		setTimeout(() => banner.style.display = "none", 1000);
+	}
+
+	if ((event.key === " " || event.code === "Space") && currentAction && !currentAction.paused) {
+		currentAction.pause();
+		banner.textContent = "⏸";
+		banner.style.display = "block";
+	}
+});
+
 
 //SCROLL
 // let lastScrollY = window.scrollY;
